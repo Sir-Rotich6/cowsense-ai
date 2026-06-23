@@ -1,0 +1,1 @@
+# CowSense AI routers package

@@ -1,0 +1,92 @@
+# ── Environment & secrets ─────────────────────────────────────────
+.env
+.env.local
+.env.production
+*.key
+*.pem
+secrets/
+
+# ── Python ────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ── Virtual environments ───────────────────────────────────────────
+venv/
+env/
+ENV/
+.venv/
+.env/
+pyenv/
+
+# ── Testing ────────────────────────────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+*.coveragerc
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# ── IDE / Editor ───────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ── Logs ──────────────────────────────────────────────────────────
+*.log
+logs/
+*.pid
+
+# ── Database / Neo4j ──────────────────────────────────────────────
+*.db
+*.sqlite3
+neo4j_data/
+
+# ── FastAPI / Uvicorn ─────────────────────────────────────────────
+.uvicorn_pid
+
+# ── Jupyter ────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb
+
+# ── Node (if Lovable exports) ─────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── Build outputs ─────────────────────────────────────────────────
+*.pyc
+*.pyo
+dist/
+build/
+
+# ── Misc ──────────────────────────────────────────────────────────
+.cache/
+tmp/
+temp/

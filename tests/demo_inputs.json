@@ -1,0 +1,207 @@
+{
+  "_note": "CowSense AI — Demo Test Inputs. Sandra Kimiring owns this file. All team members contribute edge cases.",
+  "_sources": {
+    "disease_symptoms": "KALRO Dairy Value Chain ToT Manual 2020, Module 2: Dairy Animal Health",
+    "treatment_data": "ILRI Smallholder Dairy Farmer Training Manual, 2nd Edition, 2019",
+    "regions": "Kenya Climate Smart Agriculture Strategy 2017–2026 (24 target counties)",
+    "farmer_ids": "DigiCow Africa Ndume platform field structure (AYuTe 2023)"
+  },
+
+  "health_check_scenarios": [
+    {
+      "id": "HC-001",
+      "name": "Demo Scenario 1 — East Coast Fever (URGENT)",
+      "farmer_id": "F001",
+      "symptoms": ["high fever", "swollen lymph nodes"],
+      "cow_age_years": 4,
+      "region": "nakuru",
+      "expected_disease": "East Coast Fever (ECF)",
+      "expected_severity": "HIGH",
+      "expected_vet": true,
+      "expected_medicine_contains": "Buparvaquone",
+      "notes": "Classic ECF presentation. Hallmark: prescapular lymph node swelling + fever 40-41°C. Source: KALRO Module 2."
+    },
+    {
+      "id": "HC-002",
+      "name": "ECF with breathing symptoms",
+      "farmer_id": "F001",
+      "symptoms": ["high fever", "swollen lymph nodes", "difficulty breathing"],
+      "cow_age_years": 3,
+      "region": "nakuru",
+      "expected_disease": "East Coast Fever (ECF)",
+      "expected_severity": "HIGH",
+      "expected_vet": true,
+      "notes": "Advanced ECF with pulmonary involvement. Urgency even higher."
+    },
+    {
+      "id": "HC-003",
+      "name": "Mastitis — clinical",
+      "farmer_id": "F004",
+      "symptoms": ["swollen hard udder", "blood in milk", "hot udder quarter"],
+      "cow_age_years": 5,
+      "region": "nakuru",
+      "expected_disease": "Mastitis",
+      "expected_severity": "MEDIUM",
+      "expected_vet": false,
+      "expected_medicine_contains": "Amoxicillin",
+      "notes": "Clinical mastitis. Agent can treat at home. Source: KALRO Module 2, Section 2.6.6."
+    },
+    {
+      "id": "HC-004",
+      "name": "Bloat — URGENT",
+      "farmer_id": "F002",
+      "symptoms": ["bloated left flank", "grunting"],
+      "cow_age_years": 4,
+      "region": "eldoret",
+      "expected_disease": "Bloat (Ruminal Tympany)",
+      "expected_severity": "HIGH",
+      "expected_vet": true,
+      "notes": "Fatal if untreated within 1-2 hours. Source: KALRO/ILRI."
+    },
+    {
+      "id": "HC-005",
+      "name": "FMD — notifiable",
+      "farmer_id": "F003",
+      "symptoms": ["mouth blisters", "foot blisters", "excessive drooling"],
+      "cow_age_years": 6,
+      "region": "kisii",
+      "expected_disease": "Foot and Mouth Disease (FMD)",
+      "expected_severity": "HIGH",
+      "expected_vet": true,
+      "notes": "FMD is highly contagious. Notify DVS. Isolate immediately. Source: KALRO Module 2."
+    },
+    {
+      "id": "HC-006",
+      "name": "Lumpy Skin Disease",
+      "farmer_id": "F001",
+      "symptoms": ["skin nodules", "sudden milk drop"],
+      "cow_age_years": 4,
+      "region": "nakuru",
+      "expected_disease": "Lumpy Skin Disease (LSD)",
+      "expected_severity": "MEDIUM",
+      "expected_vet": true,
+      "notes": "LSD nodules are firm, round, raised 2-5cm. Pathognomonic. Source: KALRO Module 2."
+    },
+    {
+      "id": "HC-007",
+      "name": "Babesiosis (Redwater)",
+      "farmer_id": "F002",
+      "symptoms": ["red urine", "high fever", "pale mucous membranes"],
+      "cow_age_years": 3,
+      "region": "eldoret",
+      "expected_disease": "Babesiosis",
+      "expected_severity": "HIGH",
+      "expected_vet": true,
+      "notes": "Red/dark urine = haemoglobinuria. Pathognomonic. Source: KALRO Module 2."
+    },
+    {
+      "id": "HC-008",
+      "name": "Internal Parasites — chronic",
+      "farmer_id": "F003",
+      "symptoms": ["pot belly", "bottle jaw", "weight loss"],
+      "cow_age_years": 2,
+      "region": "kisii",
+      "expected_disease": "Internal Parasites",
+      "expected_severity": "LOW",
+      "expected_vet": false,
+      "notes": "Bottle jaw = submandibular oedema from protein deficiency. Source: KALRO Module 2."
+    },
+    {
+      "id": "HC-009",
+      "name": "Pink Eye",
+      "farmer_id": "F004",
+      "symptoms": ["eye discharge", "cloudy eye", "squinting"],
+      "cow_age_years": 3,
+      "region": "nakuru",
+      "expected_disease": "Pink Eye (Keratoconjunctivitis)",
+      "expected_severity": "LOW",
+      "expected_vet": false,
+      "notes": "Corneal opacity in advanced cases. Source: KALRO Module 2."
+    },
+    {
+      "id": "HC-010",
+      "name": "Brucellosis — notifiable",
+      "farmer_id": "F005",
+      "symptoms": ["repeated abortion", "vaginal discharge"],
+      "cow_age_years": 5,
+      "region": "eldoret",
+      "expected_disease": "Brucellosis",
+      "expected_severity": "HIGH",
+      "expected_vet": true,
+      "notes": "NOTIFIABLE. Test-and-slaughter policy. Zoonotic risk. Source: KALRO Module 2."
+    }
+  ],
+
+  "market_price_scenarios": [
+    {
+      "id": "MP-001",
+      "name": "Demo Scenario 2 — Eldoret sell recommendation",
+      "farmer_id": "F002",
+      "region": "eldoret",
+      "milk_volume_l": 30,
+      "expected_price_kes": 46,
+      "expected_trend": "STABLE",
+      "expected_best_region": "Nairobi",
+      "notes": "Kipchumba has 30L. Best price is Nairobi at KES 55 vs local KES 46."
+    },
+    {
+      "id": "MP-002",
+      "name": "Nakuru — rising price",
+      "farmer_id": "F001",
+      "region": "nakuru",
+      "milk_volume_l": 18,
+      "expected_price_kes": 52,
+      "expected_trend": "RISING",
+      "notes": "Brookside active. Rising trend = sell now."
+    },
+    {
+      "id": "MP-003",
+      "name": "Meru — falling, hold",
+      "farmer_id": "F004",
+      "region": "meru",
+      "milk_volume_l": 20,
+      "expected_price_kes": 48,
+      "expected_trend": "FALLING",
+      "notes": "Seasonal oversupply. Agent should advise holding."
+    }
+  ],
+
+  "credit_profile_scenarios": [
+    {
+      "id": "CP-001",
+      "name": "Demo Scenario 3 — Band A (Kipchumba)",
+      "farmer_id": "F002",
+      "expected_band": "A",
+      "expected_score_min": 80,
+      "expected_max_loan_kes": 150000,
+      "notes": "Full score: M-Pesa + 14 months + 30L + 5 cows = 100/100"
+    },
+    {
+      "id": "CP-002",
+      "name": "Band D — not yet eligible (Achieng)",
+      "farmer_id": "F003",
+      "expected_band": "D",
+      "expected_score_max": 39,
+      "expected_max_loan_kes": 0,
+      "notes": "No M-Pesa + 3 months + 10L + 2 cows. Needs improvement."
+    },
+    {
+      "id": "CP-003",
+      "name": "Band A — Wanjiku",
+      "farmer_id": "F001",
+      "expected_band": "A",
+      "notes": "M-Pesa + 8 months + 18L + 3 cows = 100/100"
+    }
+  ],
+
+  "prioritization_scenarios": [
+    {
+      "id": "PR-001",
+      "name": "Agent A001 prioritization",
+      "agent_id": "A001",
+      "expected_top_farmer": "F001",
+      "expected_top_reason_contains": "Health",
+      "notes": "F001 has HEALTH_CHECK flag → should rank #1"
+    }
+  ]
+}
