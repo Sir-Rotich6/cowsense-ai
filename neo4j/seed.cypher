@@ -483,3 +483,153 @@ MATCH (a:ExtensionAgent {id:"A002"}),(f:Farmer {id:"F005"}) CREATE (a)-[:MANAGES
 // WHERE s.name IN ["high fever", "swollen lymph nodes"]
 // RETURN d.name, SUM(r.weight) AS score ORDER BY score DESC LIMIT 3;
 // Expected: East Coast Fever scores highest
+
+// ══════════════════════════════════════════════════════════════════
+// GRAPHRAG ENHANCEMENT — Additional nodes and relationships
+// Added after initial seed based on full research document review
+// ══════════════════════════════════════════════════════════════════
+
+// ── MISSING DISEASES FROM KALRO MODULE 2 ─────────────────────────
+
+CREATE
+  (milk_fever:Disease {
+    id: "D011",
+    name: "Milk Fever (Hypocalcaemia)",
+    category: "metabolic",
+    causative_agent: "Low blood calcium post-calving. High-yielding Friesian most at risk.",
+    severity: "HIGH",
+    vet_required: true,
+    medicine: "Calcium borogluconate 40% solution",
+    dosage: "400ml IV slow drip over 10–15 minutes. May repeat after 12 hours if no improvement.",
+    prevention: "Reduce calcium in diet 3 weeks pre-calving. Magnesium supplementation.",
+    source: "KALRO Dairy Value Chain ToT Manual 2020, Module 2; ILRI Smallholder Manual 2nd Ed 2019"
+  }),
+
+  (grass_tetany:Disease {
+    id: "D012",
+    name: "Grass Tetany (Hypomagnesaemia)",
+    category: "metabolic",
+    causative_agent: "Low blood magnesium. Occurs when grazing lush spring/post-rain pasture.",
+    severity: "HIGH",
+    vet_required: true,
+    medicine: "Magnesium sulphate 50% solution",
+    dosage: "200–400ml SC in multiple sites. Follow with oral Mg supplement daily.",
+    prevention: "Magnesium supplementation when grazing lush pasture. Avoid rapid diet changes.",
+    source: "KALRO Dairy Value Chain ToT Manual 2020, Module 2"
+  }),
+
+  (bovine_tb:Disease {
+    id: "D013",
+    name: "Bovine Tuberculosis (BTB)",
+    category: "bacterial",
+    causative_agent: "Mycobacterium bovis — zoonotic. Spread via respiratory droplets.",
+    severity: "HIGH",
+    vet_required: true,
+    medicine: "NOTIFIABLE DISEASE — No treatment. PPD tuberculin test required. Report to DVS.",
+    dosage: "Test-and-slaughter policy. All in-contact animals must be tested.",
+    prevention: "Annual PPD skin test, quarantine new animals for 60 days, avoid raw milk",
+    source: "KALRO Dairy Value Chain ToT Manual 2020, Module 2"
+  });
+
+// ── ADDITIONAL SYMPTOMS (for new diseases) ────────────────────────
+CREATE
+  (s_collapse:Symptom  {id:"S029", name:"sudden collapse post-calving",   category:"metabolic",  description:"Cow collapses or cannot stand within 48-72 hours of calving", lay_terms:"cow fell down after giving birth"}),
+  (s_tremors:Symptom   {id:"S030", name:"muscle tremors or twitching",    category:"metabolic",  description:"Involuntary muscle contractions, shivering", lay_terms:"cow shaking, trembling"}),
+  (s_cold_ears:Symptom {id:"S031", name:"cold ears and nose",             category:"metabolic",  description:"Hypothermia signs — cold extremities", lay_terms:"ears feel cold, no fever"}),
+  (s_stagger:Symptom   {id:"S032", name:"staggering or difficulty walking",category:"metabolic",  description:"Ataxia, loss of coordination when walking", lay_terms:"cow walking badly, stumbling"}),
+  (s_convuls:Symptom   {id:"S033", name:"convulsions or seizures",        category:"metabolic",  description:"Violent uncontrolled muscle spasms", lay_terms:"cow having fits"}),
+  (s_chr_cough:Symptom {id:"S034", name:"chronic cough lasting weeks",    category:"respiratory",description:"Persistent non-productive cough over many weeks", lay_terms:"cow coughing for a long time"}),
+  (s_hard_breath:Symptom{id:"S035", name:"laboured breathing at rest",    category:"respiratory",description:"Difficulty breathing even without exertion", lay_terms:"cow breathing hard when resting"});
+
+// ── SYMPTOM → DISEASE for new diseases ───────────────────────────
+MATCH (d:Disease {id:"D011"}),(s:Symptom {id:"S029"}) CREATE (s)-[:INDICATES {weight:0.95, note:"Post-calving collapse is pathognomonic for milk fever in Friesians"}]->(d);
+MATCH (d:Disease {id:"D011"}),(s:Symptom {id:"S031"}) CREATE (s)-[:INDICATES {weight:0.90, note:"Cold ears + no fever distinguishes milk fever from infectious disease"}]->(d);
+MATCH (d:Disease {id:"D011"}),(s:Symptom {id:"S030"}) CREATE (s)-[:INDICATES {weight:0.80}]->(d);
+MATCH (d:Disease {id:"D011"}),(s:Symptom {id:"S017"}) CREATE (s)-[:INDICATES {weight:0.70, note:"Milk production drops suddenly"}]->(d);
+
+MATCH (d:Disease {id:"D012"}),(s:Symptom {id:"S032"}) CREATE (s)-[:INDICATES {weight:0.85, note:"Staggers before convulsions in grass tetany"}]->(d);
+MATCH (d:Disease {id:"D012"}),(s:Symptom {id:"S033"}) CREATE (s)-[:INDICATES {weight:0.90, note:"Convulsions are late-stage grass tetany — emergency"}]->(d);
+MATCH (d:Disease {id:"D012"}),(s:Symptom {id:"S030"}) CREATE (s)-[:INDICATES {weight:0.80}]->(d);
+
+MATCH (d:Disease {id:"D013"}),(s:Symptom {id:"S034"}) CREATE (s)-[:INDICATES {weight:0.85, note:"Chronic cough weeks/months — key BTB sign"}]->(d);
+MATCH (d:Disease {id:"D013"}),(s:Symptom {id:"S003"}) CREATE (s)-[:INDICATES {weight:0.80}]->(d);
+MATCH (d:Disease {id:"D013"}),(s:Symptom {id:"S006"}) CREATE (s)-[:INDICATES {weight:0.70}]->(d);
+MATCH (d:Disease {id:"D013"}),(s:Symptom {id:"S035"}) CREATE (s)-[:INDICATES {weight:0.75}]->(d);
+
+// ── CO_OCCURRING RELATIONSHIPS ────────────────────────────────────
+// Source: KALRO Module 2 — tick-borne diseases commonly present together
+
+MATCH (ecf:Disease {id:"D001"}),(ana:Disease {id:"D002"})
+CREATE (ecf)-[:CO_OCCURRING {frequency:"common", reason:"Both tick-borne, same vector Rhipicephalus"}]->(ana);
+
+MATCH (ana:Disease {id:"D002"}),(bab:Disease {id:"D003"})
+CREATE (ana)-[:CO_OCCURRING {frequency:"common", reason:"Both cause anaemia, often found in same tick-infested herds"}]->(bab);
+
+MATCH (worms:Disease {id:"D008"}),(ana:Disease {id:"D002"})
+CREATE (worms)-[:CO_OCCURRING {frequency:"occasional", reason:"Both cause anaemia — differentiate by symptoms"}]->(ana);
+
+// ── SEASONAL_RISK RELATIONSHIPS ───────────────────────────────────
+// Source: KMD Agrometeorology + KALRO Module 2 disease ecology
+
+// Dry season → ticks concentrate at water points → tick-borne diseases peak
+MATCH (r1:Region {id:"R001"}),(ecf:Disease {id:"D001"}) CREATE (r1)-[:SEASONAL_RISK {season:"dry", reason:"Ticks concentrate at water points in dry season. Nakuru highlands affected."}]->(ecf);
+MATCH (r2:Region {id:"R002"}),(ecf:Disease {id:"D001"}) CREATE (r2)-[:SEASONAL_RISK {season:"dry", reason:"Uasin Gishu: dry months Oct-Dec increase ECF risk"}]->(ecf);
+MATCH (r1:Region {id:"R001"}),(ana:Disease {id:"D002"}) CREATE (r1)-[:SEASONAL_RISK {season:"dry", reason:"Same tick vector as ECF"}]->(ana);
+
+// Post-rain → lush pasture → bloat and grass tetany risk
+MATCH (r4:Region {id:"R004"}),(bloat:Disease {id:"D009"}) CREATE (r4)-[:SEASONAL_RISK {season:"long_rains", reason:"Kisii: lush pasture after March-May rains increases bloat risk"}]->(bloat);
+MATCH (r7:Region {id:"R007"}),(gt:Disease {id:"D012"})   CREATE (r7)-[:SEASONAL_RISK {season:"long_rains", reason:"Kericho highlands: rapid lush growth post-rain triggers grass tetany"}]->(gt);
+
+// Post-calving → milk fever (not seasonal but lifecycle-triggered)
+MATCH (r1:Region {id:"R001"}),(mf:Disease {id:"D011"}) CREATE (r1)-[:SEASONAL_RISK {season:"any_post_calving", reason:"Friesian herds in Nakuru: milk fever risk in first 72h after calving"}]->(mf);
+
+// ── FEED TYPE NODES ───────────────────────────────────────────────
+// Source: ILRI Smallholder Dairy Manual 2nd Ed 2019 + KALRO Pasture/Fodder ToT Manual 2020
+
+CREATE
+  (f1:FeedType {id:"FT001", name:"Napier grass",         dry_matter_pct:15, crude_protein_pct:8,  notes:"Main fodder in Kenya. Harvest at 1m height for best quality."}),
+  (f2:FeedType {id:"FT002", name:"Dairy meal (compound)", dry_matter_pct:88, crude_protein_pct:16, notes:"Commercial concentrate. Feed 1kg per 3L milk produced above maintenance."}),
+  (f3:FeedType {id:"FT003", name:"Lush legume pasture",   dry_matter_pct:12, crude_protein_pct:22, notes:"High protein but HIGH BLOAT RISK. Limit access, never graze when wet."}),
+  (f4:FeedType {id:"FT004", name:"Maize silage",          dry_matter_pct:30, crude_protein_pct:8,  notes:"High energy. Combine with protein supplement. Good for dry season."}),
+  (f5:FeedType {id:"FT005", name:"Hay (Rhodes/Kikuyu)",   dry_matter_pct:85, crude_protein_pct:7,  notes:"Dry roughage. Feed before grazing lush pasture to prevent bloat."}),
+  (f6:FeedType {id:"FT006", name:"Lucerne (alfalfa)",     dry_matter_pct:20, crude_protein_pct:18, notes:"High quality. HIGH BLOAT RISK when grazed fresh. Wilt before feeding."});
+
+// Feed → Disease risk links
+// Source: KALRO Pasture/Fodder ToT Manual 2020; ILRI Manual 2nd Ed 2019
+MATCH (f3:FeedType {id:"FT003"}),(bloat:Disease {id:"D009"}) CREATE (f3)-[:INCREASES_RISK_OF {condition:"frothy bloat when grazed wet or in large quantity"}]->(bloat);
+MATCH (f6:FeedType {id:"FT006"}),(bloat:Disease {id:"D009"}) CREATE (f6)-[:INCREASES_RISK_OF {condition:"frothy bloat — wilt lucerne before feeding"}]->(bloat);
+MATCH (f3:FeedType {id:"FT003"}),(gt:Disease   {id:"D012"}) CREATE (f3)-[:INCREASES_RISK_OF {condition:"grass tetany on spring/post-rain lush pasture due to low Mg"}]->(gt);
+
+// ── SYMPTOM DESCRIPTIONS (for GraphRAG semantic search) ───────────
+// Add lay_terms and description to existing symptoms for better vector matching
+// These feed into the embedding generation script
+
+MATCH (s:Symptom {id:"S001"}) SET s.description = "Elevated body temperature above 39.5°C measured rectally", s.lay_terms = "cow hot to touch, high temperature, fever";
+MATCH (s:Symptom {id:"S006"}) SET s.description = "Enlarged lymph nodes especially prescapular (behind shoulder)", s.lay_terms = "lumps behind shoulder, swollen glands, nodules under skin";
+MATCH (s:Symptom {id:"S007"}) SET s.description = "Increased respiratory rate, laboured breathing, open-mouth breathing", s.lay_terms = "cow breathing fast, struggling to breathe, shortness of breath";
+MATCH (s:Symptom {id:"S015"}) SET s.description = "Udder quarter hard, swollen, painful on palpation", s.lay_terms = "hard udder, swollen breast, painful milk bag";
+MATCH (s:Symptom {id:"S016"}) SET s.description = "Blood-tinged or clotted milk, abnormal milk appearance", s.lay_terms = "blood in milk, pink milk, clots in milk";
+MATCH (s:Symptom {id:"S017"}) SET s.description = "Significant reduction in milk volume compared to normal", s.lay_terms = "less milk, milk dried up, low production";
+MATCH (s:Symptom {id:"S024"}) SET s.description = "Distension of left flank, visible bulge behind last rib", s.lay_terms = "left side bloated, bulging left side, stomach swollen";
+MATCH (s:Symptom {id:"S019"}) SET s.description = "Loss of calf before full term, multiple occurrences", s.lay_terms = "lost calf, miscarriage, cow keeps aborting";
+MATCH (s:Symptom {id:"S010"}) SET s.description = "Urine discoloured red, brown or black due to haemoglobin", s.lay_terms = "red urine, dark pee, blood in urine";
+MATCH (s:Symptom {id:"S013"}) SET s.description = "Raised circular nodules 2-5cm on skin, firm, all over body", s.lay_terms = "bumps on skin, skin nodules, circular lumps on body";
+
+// ── VERIFY GRAPHRAG ADDITIONS ─────────────────────────────────────
+// After running this, verify with:
+
+// Check all node counts:
+// MATCH (n) RETURN labels(n)[0] AS type, count(n) AS count ORDER BY type;
+// Expected new additions:
+// Disease: 13 (was 10, added 3)
+// Symptom: 35 (was 28, added 7)
+// FeedType: 6 (new)
+
+// Check new relationship types:
+// MATCH ()-[r]->() RETURN type(r), count(r) ORDER BY count(r) DESC;
+// Should now include: CO_OCCURRING, SEASONAL_RISK, INCREASES_RISK_OF
+
+// Test GraphRAG co-occurrence query:
+// MATCH (d1:Disease {id:"D001"})-[:CO_OCCURRING]->(d2:Disease)
+// RETURN d1.name AS disease, d2.name AS also_check;
+// Expected: East Coast Fever → Anaplasmosis
